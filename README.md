@@ -1,5 +1,5 @@
 # LiDAR in Soccer Processing Team
-This reppository is for processig point clouds data of Lindar in soccer.  
+This reppository is for processig point clouds data of LiDAR in soccer.  
 ## Data structure
 Please edit `config.ini` file and change __DATA_PATH__ and __BASE_PATH__ to yours.  
 Data structure under __DATA_PATH__ is as follows.
