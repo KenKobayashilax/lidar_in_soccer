@@ -87,7 +87,7 @@ def main():
                        res=res, start=start)
 
     print("making points list")
-    points_by_timestamp = read_csv(csv_file_path, res)
+    points_by_timestamp = read_csv(csv_file_path, res, start)
     print("points list is made")  
     
     save_points(points_by_timestamp, output_dir, res)
