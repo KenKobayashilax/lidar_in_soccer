@@ -1,9 +1,13 @@
 import csv
 import open3d as o3d
 import os
+from settings import DATA_PATH
 
 # Open the CSV file and read it line by line
-def read_csv(csv_file_path, res=10):    
+def read_csv(csv_file_path,
+             res=10, #res: time resolution
+             start=0 #start: the time(second) to set as frame0 
+             ):  
     with open(csv_file_path, 'r') as csvfile:
         csvreader = csv.DictReader(csvfile)
         
@@ -18,10 +22,13 @@ def read_csv(csv_file_path, res=10):
         for i, row in enumerate(csvreader):
             timestamp = int(row['Timestamp'])
             if i==0:
-                timestamp_lower_bound = int(timestamp) #set first timestamp to the first lower bound
+                timestamp_lower_bound = int(timestamp) + start*1000000000 #set initial lower bound.
                 timestamp_list[str(frame_id)] = timestamp_lower_bound
                 points_by_timestamp[str(frame_id)] = []
                 
+            if timestamp - timestamp_lower_bound < 0: #the case timestamp doesn't reach frame0 
+                continue
+            
             x, y, z = float(row['X']), float(row['Y']), float(row['Z'])
 
             # Skip rows where X, Y, and Z values are all zero
@@ -59,13 +66,25 @@ def save_points(points_by_timestamp, output_dir,res=10):
         o3d.io.write_point_cloud(output_file, point_cloud)
 
         print(f"{frame_id}/{biggest_frame_id}")
+    
+def make_save_dir_path(data_path, 
+                       data_type_name="LIVOX_Hallway_pcds", 
+                       file_name="jogging_fast_4th", 
+                       res=10, start=0):
+    dir_name = rf"res{res}ms_" + rf"start{start}s" #res10ms_start25s
+    return os.path.join(data_path, data_type_name, file_name, dir_name)
+        
 
 def main():
-    # Replace 'your_input.csv' and 'output_directory' with your actual input CSV file and output directory
-    csv_file_path = fr"C:/Users/15kob/Documents/study/abroad/lectures/LiDAR_in_soccer/data/LIVOX_Hallway_csv/jogging_fast_4th.csv"
-    output_dir = fr"C:/Users/15kob/Documents/study/abroad/lectures/LiDAR_in_soccer/data/LIVOX_Hallway_pcds/jogging_fast_4th/res10ms"
-
     res = 10 #time resolution of frames(mili second)
+    start = 13.5 #the time(second) to set as frame0 <- this should be the time human started to run.
+    
+    # Replace 'your_input.csv' and 'output_directory' with your actual input CSV file and output directory
+    csv_file_path = fr"{DATA_PATH}/LIVOX_Hallway_csv/jogging_fast_4th.csv"
+    output_dir = make_save_dir_path(data_path=DATA_PATH, 
+                       data_type_name="LIVOX_Hallway_pcds", 
+                       file_name="jogging_fast_4th", 
+                       res=res, start=start)
 
     print("making points list")
     points_by_timestamp = read_csv(csv_file_path, res)
