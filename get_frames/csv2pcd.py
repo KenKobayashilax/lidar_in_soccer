@@ -76,14 +76,19 @@ def make_save_dir_path(data_path,
         
 
 def main():
+    
     res = 10 #time resolution of frames(mili second)
     start = 13.5 #the time(second) to set as frame0 <- this should be the time human started to run.
     
+    data_type_name_csv = "LIVOX_Hallway_csv"
+    data_type_name_pcd = "LIVOX_Hallway_pcds"
+    file_name="jogging_fast_4th"
+    
     # Replace 'your_input.csv' and 'output_directory' with your actual input CSV file and output directory
-    csv_file_path = fr"{DATA_PATH}/LIVOX_Hallway_csv/jogging_fast_4th.csv"
+    csv_file_path = os.path.join(DATA_PATH, data_type_name_csv, file_name+".csv")
     output_dir = make_save_dir_path(data_path=DATA_PATH, 
-                       data_type_name="LIVOX_Hallway_pcds", 
-                       file_name="jogging_fast_4th", 
+                       data_type_name=data_type_name_pcd, 
+                       file_name=file_name, 
                        res=res, start=start)
 
     print("making points list")
