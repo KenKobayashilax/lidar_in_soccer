@@ -36,7 +36,7 @@ At the first cell, you can process sequential pcd files, and second, single pcd 
 At the first cell, you firstly select the viewpoint and close the window. After that, you can see the clusters from the selected viewpoint.  
 You can process single pcd files also by the `clusterization/clusterize.py`, but not sequential data.  
 
-In both cells, you can change data_path. And, at the `clusterize.clusterize` function, you can define more arguments than written in .ipynb file. So, please take a look at `clusterization/clusterize.py`.
+In both cells, you can change data_path. And, at the `clusterization.clusterize` function, you can define more arguments than written in .ipynb file. So, please take a look at `clusterization/clusterize.py`.
 
 ## Human detection
 ## Compute CoM(center of mass)
