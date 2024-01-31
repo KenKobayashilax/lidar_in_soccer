@@ -64,7 +64,7 @@ def visualize_by_cluster(pcd, labels, colors=None):
                                         height=600)
 
 #crop (and save) the cluster corresponding to clluster id.
-def crop_cluster(pcd, labels, cluster_id, save_path=None, Visualize=True): 
+def crop_cluster(pcd, labels, cluster_id, save_path=None, Visualize=False): 
     # Convert Open3D point cloud to numpy array
         pcd_np = np.asarray(pcd.points)
         
@@ -82,6 +82,7 @@ def crop_cluster(pcd, labels, cluster_id, save_path=None, Visualize=True):
                                             window_name=f"cluster_{cluster_id}",
                                             width=800,
                                             height=600)
+        return cluster_cloud
 
 def main():
     pcd_file = fr"C:/Users/15kob/Documents/study/abroad/lectures/LiDAR_in_soccer/data/New_data/New_data/test.pcd"

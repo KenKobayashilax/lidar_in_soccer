@@ -17,15 +17,19 @@ def visualize(pcd_list, time_duration=100, window_name="cluster", width=1920, he
         view_control = vis.get_view_control()
         view_control.convert_from_pinhole_camera_parameters(cam_params,allow_arbitrary=True)
     
-    # 描画
-    vis.poll_events()
-    vis.update_renderer()
+    if time_duration is not None:
+        # 描画
+        vis.poll_events()
+        vis.update_renderer()
 
-    # 待機
-    time.sleep(time_duration)
+        # 待機
+        time.sleep(time_duration)
 
-    # ウィンドウを閉じる
-    vis.destroy_window()
+        # ウィンドウを閉じる
+        vis.destroy_window()
+    
+    elif time_duration is None:
+        vis.run()
     
 '''
 How to use?
