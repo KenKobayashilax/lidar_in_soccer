@@ -1,7 +1,5 @@
 
-import pandas as pd
 import numpy as np
-import laspy
 import open3d 
 from settings import DATA_PATH
 from utils import visualizer
@@ -13,7 +11,9 @@ def open3d_cluster(pcd,
                    visualize_noise, #visualize noise points or not.
                    window_name,
                    time_duration, #how long window is visualized
-                   cam_params): 
+                   cam_params,
+                   save_path,
+                   visualize): 
     
     # pcd = open3d.geometry.PointCloud(pcd)
     
@@ -34,18 +34,23 @@ def open3d_cluster(pcd,
     # delete noise points
     if not visualize_noise:
         #select only clusterized points
-        pcd = pcd.select_by_index(np.where(np.array(labels) != -1)[0]) 
+        pcd = pcd.select_by_index(np.where(np.array(labels) != -1)[0])
+    
+    if save_path != None:
+        # save as .pcd file
+        open3d.io.write_point_cloud(save_path, pcd)
     
     
     # close window at the time of selected time duration
-    if time_duration is not None:
-        # Visual point cloud list
-        visualizer.visualize([pcd],time_duration=time_duration,
-                            window_name=window_name,cam_params=cam_params)
-    # normal window
-    else: 
-        open3d.visualization.draw_geometries([pcd],
-                                    window_name=window_name)
+    if visualize == True:
+        if time_duration is not None:
+            # Visual point cloud list
+            visualizer.visualize([pcd],time_duration=time_duration,
+                                window_name=window_name,cam_params=cam_params)
+        # normal window
+        else: 
+            open3d.visualization.draw_geometries([pcd],
+                                        window_name=window_name)
     return labels
 
 
@@ -69,8 +74,8 @@ def fit_plane(pcd, distance_threshold, visualize_plane):
 
 #one cycle of clustrization
 def clusterize(pcd, distance_threshold=0.05, num_planes=2, visualize_plane=False,
-               eps=0.3, window_name="cluster", visualize_noise=False, 
-               time_duration=None, cam_params=None
+               eps=0.3, window_name="cluster", visualize_noise=True,
+               time_duration=None, cam_params=None, save_path=None,visualize = True
                ):
     
     #iterate fitting planes for "num_planes" times
@@ -78,11 +83,11 @@ def clusterize(pcd, distance_threshold=0.05, num_planes=2, visualize_plane=False
         pcd = fit_plane(pcd, distance_threshold, visualize_plane=visualize_plane)
     
     outlier_cloud = pcd
-    labels = open3d_cluster(outlier_cloud, eps, visualize_noise, window_name, time_duration,cam_params)
+    labels = open3d_cluster(outlier_cloud, eps, visualize_noise, window_name, time_duration,cam_params, save_path, visualize)
     return labels
 
 def main():
-    pcd_file = rf'{DATA_PATH}/LIVOX_Hallway_pcds/res100ms_start30s/res100ms_start30s/00100.pcd'
+    pcd_file = rf'{DATA_PATH}/LIVOX_Hallway_pcds/Walking_to_end_1st1/res100ms_start30s/00100.pcd'
     eps=0.5
     num_planes=2 #how many times plane fitting is applied
     
