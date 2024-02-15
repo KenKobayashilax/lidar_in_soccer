@@ -34,7 +34,6 @@ def compute_nearest_cluster(pcd, labels, center_prev):
 def compute_nearest_multi_cluster(pcd, labels, center_prev_list): 
     #initialization
     nearest_cluster_id = 0
-    nearest_center = np.zeros(3)
     nearest_dist = np.inf
     
     #get label values
@@ -148,18 +147,6 @@ def change_cluster_color(pcd, labels, cluster_id, color=[1.0, 0.0, 0.0]):
 
 
 def change_multi_cluster_color(pcd, labels, cluster_id, color=[1.0, 0.0, 0.0]):
-    colors = np.asarray(pcd.colors)
-    for i in range(len(labels)):
-        
-        for id in cluster_id:
-            if labels[i] == id:  
-                colors[i] = color
-    
-    pcd.colors = o3d.utility.Vector3dVector(colors)
-    
-    return pcd
-
-def change_cluster_color_bbox(pcd, labels, cluster_id, color=[1.0, 0.0, 0.0]):
     colors = np.asarray(pcd.colors)
     for i in range(len(labels)):
         
