@@ -1,5 +1,7 @@
 import open3d as o3d
 import numpy as np
+import utils.visualizer as visualizer
+import os
 
 #compute the nearest cluster and output cluster id
 def compute_nearest_cluster(pcd, labels, center_prev):
@@ -60,6 +62,26 @@ def compute_nearest_multi_cluster(pcd, labels, center_prev_list):
     
     return nearest_cluster_ids
 
+def compute_nearest_cluster_multicase(pcd, labels, fl_label, center_prev_list): 
+    #initialization
+    nearest_cluster_id = 0
+    refer_id = 00
+    nearest_dist = np.inf
+
+    cropped_cluster = pcd.select_by_index(np.where(np.array(labels)==fl_label)[0])
+
+    #center of cropped_clusters
+    center_tmp = cropped_cluster.get_center()
+
+    for center_prev in center_prev_list:
+        #euclidian distance between center_prev and center_tmp
+        current_dist = np.linalg.norm (center_prev[1] - center_tmp)
+        if current_dist < nearest_dist:
+            nearest_dist = current_dist
+            nearest_cluster_id = fl_label
+            refer_id = center_prev[0]
+    
+    return refer_id, nearest_cluster_id
 
 # compute bbox of clusters
 def compute_bbox(pcd, labels):
@@ -97,7 +119,7 @@ def compute_bbox(pcd, labels):
         width = bbox['max'][1] - bbox['min'][1]
 
         # check if bbox seems like a human
-        if 1.3 <= height <= 2.2 and 0.2 <= length <= 2.5 and 0.2 <= width <= 2.5:
+        if 1.5 <= height <= 2.0 and 0.5 <= length <= 2.0 and 0.5 <= width <= 2.5:
             filtered_labels.append(bbox['label'])
     
     print('filtered_labels:', filtered_labels)  
@@ -136,3 +158,26 @@ def change_multi_cluster_color(pcd, labels, cluster_id, color=[1.0, 0.0, 0.0]):
     pcd.colors = o3d.utility.Vector3dVector(colors)
     
     return pcd
+
+def change_cluster_color_bbox(pcd, labels, cluster_id, color=[1.0, 0.0, 0.0]):
+    colors = np.asarray(pcd.colors)
+    for i in range(len(labels)):
+        
+        for id in cluster_id:
+            if labels[i] == id:  
+                colors[i] = color
+    
+    pcd.colors = o3d.utility.Vector3dVector(colors)
+    
+    return pcd
+
+def save_bbox_result(inx, folder_tracked, pcd_file, cropped_pcd):
+    cluster_tracked = str(inx) + "_class"
+    class_folder_tracked = os.path.join(folder_tracked, cluster_tracked)
+    
+    if not os.path.exists(class_folder_tracked):
+        os.makedirs(class_folder_tracked)
+        
+    save_path_tracked = class_folder_tracked + '/' + os.path.basename(pcd_file) 
+    if save_path_tracked != None:
+        o3d.io.write_point_cloud(save_path_tracked, cropped_pcd)

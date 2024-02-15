@@ -1,8 +1,9 @@
 import open3d as o3d
 import numpy as np
+import utils.visualizer as visualizer
 
 #visualize by cluster according to labels. To check the label_id, please refer to the window name
-def visualize_by_cluster(pcd, labels, colors=None):                             
+def visualize_by_cluster(pcd, labels, colors=[1,0,0]):                             
     # Crop point clouds based on clusters
     unique_labels = np.unique(labels)
 
@@ -12,6 +13,20 @@ def visualize_by_cluster(pcd, labels, colors=None):
             continue
         
         cluster_cloud = pcd.select_by_index(np.where(np.array(labels)==cluster_id)[0])
+
+        # Visualize the cropped cluster
+        o3d.visualization.draw_geometries([cluster_cloud],
+                                        window_name=f"cluster_{cluster_id}",
+                                        width=800,
+                                        height=600)
+
+def visualize_by_cluster_bbox(pcd, labels, fl_labels, colors=[1,0,0]):                             
+    # Crop point clouds based on clusters
+    unique_labels = np.unique(labels)
+
+    for cluster_id in fl_labels:
+        cluster_cloud = pcd.select_by_index(np.where(np.array(labels)==cluster_id)[0])
+        cluster_cloud.paint_uniform_color(colors)
 
         # Visualize the cropped cluster
         o3d.visualization.draw_geometries([cluster_cloud],
@@ -38,3 +53,29 @@ def crop_cluster(pcd, labels, cluster_id, visualize=False):
                                             width=800,
                                             height=600)
         return(cropped_pcd)
+
+def visualize_bbox_result(org_pcd, human_clusters,time_duration=0.2, cam_params=None, visualize=False):
+    if human_clusters != np.empty((0,3)): 
+        org_pcd.paint_uniform_color([0,0,0])
+        org_pcd_load = np.asarray(org_pcd.points)
+        org_pcd_color = np.asarray(org_pcd.colors)
+
+        human_pcd = o3d.geometry.PointCloud()
+        human_pcd.points = o3d.utility.Vector3dVector(human_clusters)
+        human_pcd.paint_uniform_color([1,0,0])
+        human_pcd_color = np.asarray(human_pcd.colors)
+        human_pcd_load = np.asarray(human_pcd.points)
+
+        res_pcd = o3d.geometry.PointCloud()
+        res_pcd_load = np.concatenate((human_pcd_load, org_pcd_load), axis=0)
+        res_pcd_color = np.concatenate((human_pcd_color,org_pcd_color), axis=0) 
+        res_pcd.points = o3d.utility.Vector3dVector(res_pcd_load)   
+        res_pcd.colors = o3d.utility.Vector3dVector(res_pcd_color)       
+
+        if visualize:
+            visualizer.visualize(res_pcd, 
+                                time_duration=time_duration, 
+                                window_name="bbox_result", 
+                                width=1920, 
+                                height=1080, 
+                                cam_params=cam_params)
