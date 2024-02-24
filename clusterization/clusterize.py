@@ -82,8 +82,8 @@ def clusterize(pcd, distance_threshold=0.05, num_planes=2, visualize_plane=False
                ):
     
     #iterate fitting planes for "num_planes" times
-    for i in range(num_planes):
-        pcd = fit_plane(pcd, distance_threshold, visualize_plane=visualize_plane)
+    # for i in range(num_planes):
+    #     pcd = fit_plane(pcd, distance_threshold, visualize_plane=visualize_plane)
     
     outlier_cloud = pcd
     pcd, labels = open3d_cluster(outlier_cloud, eps, visualize_noise, window_name, time_duration,cam_params, save_path, visualize)
