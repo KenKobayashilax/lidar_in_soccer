@@ -55,7 +55,7 @@ def crop_cluster(pcd, labels, cluster_id, visualize=False):
         return(cropped_pcd)
 
 def visualize_bbox_result(org_pcd, human_clusters,time_duration=0.2, cam_params=None, visualize=False):
-    if human_clusters != np.empty((0,3)): 
+    if human_clusters is not None: 
         org_pcd.paint_uniform_color([0,0,0])
         org_pcd_load = np.asarray(org_pcd.points)
         org_pcd_color = np.asarray(org_pcd.colors)
