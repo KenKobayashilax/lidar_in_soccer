@@ -118,7 +118,7 @@ def compute_bbox(pcd, labels):
         width = bbox['max'][1] - bbox['min'][1]
 
         # check if bbox seems like a human
-        if 1.5 <= height <= 2.0 and 0.5 <= length <= 2.0 and 0.5 <= width <= 2.5:
+        if 0.5 <= height <= 2.5 and 0.5 <= length <= 2.5 and 0.5 <= width <= 2.5:
             filtered_labels.append(bbox['label'])
     
     print('filtered_labels:', filtered_labels)  
