@@ -1,4 +1,4 @@
 #write your path to data dir
-DATA_PATH = "D:/TUM File/semester5/pratical laser scanning/data"
+DATA_PATH = "C:/Users/15kob/Documents/study/abroad/lectures/LiDAR_in_soccer/data/"
 #write your path to main dir
-BASE_PATH = "D:/TUM File/semester5/pratical laser scanning/lidar_in_soccer-main"
+BASE_PATH = "C:/Users/15kob/Documents/study/abroad/lectures/LiDAR_in_soccer/"
