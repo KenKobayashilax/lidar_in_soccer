@@ -87,28 +87,34 @@ def align_dataframe(gt_new, ms, len_diff, filter):
             best_offset = offset
             best_df2 = offset_df2.iloc[np.min(index_list):np.max(index_list)+1]
     
-    return(min_rmse, best_df2, best_offset)
+    return min_rmse, best_df2, best_offset
+
 
 # plot
 def plot_validation_result(len_diff, best_chunk, gt_new, ms):
+    if isinstance(best_chunk, float):
+        print("Error: Alignment unsuccessful. Please check your data and alignment parameters.")
+        return
+
     if len_diff > 0:
         aligned_gt = best_chunk
-        time_offset = aligned_gt.iloc[0].values[0]*100 - gt_new.iloc[0].values[0]
-        plt.plot(aligned_gt['Time'] * 100, aligned_gt['Velocity'], label='Ground Truth',color='blue')
-        plt.plot(ms['Time'] + time_offset, ms['Velocity'], label='LiDAR_Measurement', color='red')
+        time_offset = aligned_gt.index[0] - gt_new.index[0]
+        plt.plot(aligned_gt.index, aligned_gt['Velocity'], label='Ground Truth', color='blue')
+        plt.plot(ms.index + time_offset, ms['Velocity'], label='LiDAR_Measurement', color='red')
     else:
         aligned_ms = best_chunk
-        time_offset = aligned_ms.iloc[0].values[0]- ms.iloc[0].values[0]
-        plt.plot(gt_new['Time'] * 100 + time_offset, gt_new['Velocity'], label='Ground Truth',color='blue')
-        plt.plot(aligned_ms['Time'] , aligned_ms['Velocity'], label='LiDAR_Measurement', color='red')
+        time_offset = aligned_ms.index[0] - ms.index[0]
+        plt.plot(gt_new.index + time_offset, gt_new['Velocity'], label='Ground Truth', color='blue')
+        plt.plot(aligned_ms.index, aligned_ms['Velocity'], label='LiDAR_Measurement', color='red')
+    
     plt.legend()
-
     plt.xlabel('Time')
     plt.ylabel('Velocity')
     plt.title('Validation')
-
     plt.tight_layout()
     plt.show()
+
+
 
 def plot_validation_filtered_result(len_diff_f, best_chunk_f, gt_f_new, ms):
     if len_diff_f > 0:
