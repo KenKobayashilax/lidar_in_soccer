@@ -119,14 +119,14 @@ def plot_validation_result(len_diff, best_chunk, gt_new, ms):
 def plot_validation_filtered_result(len_diff_f, best_chunk_f, gt_f_new, ms):
     if len_diff_f > 0:
         aligned_gt_f = best_chunk_f
-        time_offset_f = aligned_gt_f.iloc[0].values[0]*100 - gt_f_new.iloc[0].values[0]
-        plt.plot(aligned_gt_f['Time'] * 100, aligned_gt_f['Filtered_Velocity'], label='Ground Truth',color='blue')
-        plt.plot(ms['Time'] + time_offset_f, ms['Filtered_Velocity'], label='LiDAR_Measurement', color='red')
+        time_offset_f = aligned_gt_f.index[0] - gt_f_new.index[0]
+        plt.plot(aligned_gt_f.index, aligned_gt_f['Filtered_Velocity'], label='Ground Truth',color='blue')
+        plt.plot(ms.index + time_offset_f, ms['Filtered_Velocity'], label='LiDAR_Measurement', color='red')
     else:
         aligned_ms_f = best_chunk_f
-        time_offset_f = aligned_ms_f.iloc[0].values[0]- ms.iloc[0].values[0]
-        plt.plot(gt_f_new['Time'] * 100 + time_offset_f, gt_f_new['Filtered_Velocity'], label='Ground Truth',color='blue')
-        plt.plot(aligned_ms_f['Time'] , aligned_ms_f['Filtered_Velocity'], label='LiDAR_Measurement', color='red')
+        time_offset_f = aligned_ms_f.index[0] - ms.index[0]
+        plt.plot(gt_f_new.index + time_offset_f, gt_f_new['Filtered_Velocity'], label='Ground Truth',color='blue')
+        plt.plot(aligned_ms_f.index , aligned_ms_f['Filtered_Velocity'], label='LiDAR_Measurement', color='red')
     plt.legend()
 
     plt.xlabel('Time')
