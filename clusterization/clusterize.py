@@ -22,7 +22,10 @@ def open3d_cluster(pcd,
     max_label = max(labels)
     print("num_clusters", max_label+1)
     
-    assert max_label!=-1, "cluster was not found by db_scan.try again by higher eps!!"
+    # assert max_label==-1, "cluster was not found by db_scan.try again by higher eps!!"
+    if max_label==-1:
+        print("cluster was not found by db_scan!")
+        return pcd, labels
     
     # randomly build n+1 colors, and normalize
     colors = np.random.randint(1, 255, size=(max_label + 1, 3)) / 255.

@@ -95,6 +95,9 @@ def compute_bbox(pcd, labels):
     bboxes = []
     
     for label in unique_labels:
+        #when label is outlier
+        if label==-1:
+            continue
         # extract the points belonging to the current clustering
         cluster_points = points[labels == label]
 
