@@ -114,13 +114,13 @@ def plot_validation_result(len_diff, best_chunk, gt_new, ms):
     if len_diff > 0:
         aligned_gt = best_chunk
         time_offset = aligned_gt.index[0] - gt_new.index[0]
-        plt.plot(gt_new.index , gt_new['Velocity'], label='Ground Truth', color='blue')
-        plt.plot(ms.index + time_offset, ms['Velocity'] , label='LiDAR_Measurement', color='red')
+        plt.plot(gt_new.index , gt_new['Velocity'], label='Laser Pistol', color='blue')
+        plt.plot(ms.index + time_offset, ms['Velocity'] , label='Livox_Measurement', color='red')
     else:
         aligned_ms = best_chunk
         time_offset = aligned_ms.index[0] - ms.index[0]
-        plt.plot(gt_new.index + time_offset, gt_new['Velocity'], label='Ground Truth', color='blue')
-        plt.plot(ms.index , ms['Velocity'], label='LiDAR_Measurement', color='red')
+        plt.plot(gt_new.index + time_offset, gt_new['Velocity'], label='Laser Pistol', color='blue')
+        plt.plot(ms.index , ms['Velocity'], label='Livox_Measurement', color='red')
     
     plt.legend()
     plt.xlabel('Time')
@@ -134,13 +134,13 @@ def plot_validation_filtered_result(len_diff_f, best_chunk_f, gt_f_new, ms):
     if len_diff_f > 0:
         aligned_gt_f = best_chunk_f
         time_offset_f = aligned_gt_f.index[0] - gt_f_new.index[0]
-        plt.plot(gt_f_new.index, gt_f_new['Filtered_Velocity'], label='Ground Truth',color='blue')
-        plt.plot(ms.index + time_offset_f, ms['Filtered_Velocity'], label='LiDAR_Measurement', color='red')
+        plt.plot(gt_f_new.index, gt_f_new['Filtered_Velocity'], label='Laser Pistol',color='blue')
+        plt.plot(ms.index + time_offset_f, ms['Filtered_Velocity'], label='Livox_Measurement', color='red')
     else:
         aligned_ms_f = best_chunk_f
         time_offset_f = aligned_ms_f.index[0] - ms.index[0]
-        plt.plot(gt_f_new.index + time_offset_f, gt_f_new['Filtered_Velocity'], label='Ground Truth',color='blue')
-        plt.plot(ms.index, ms['Filtered_Velocity'], label='LiDAR_Measurement', color='red')
+        plt.plot(gt_f_new.index + time_offset_f, gt_f_new['Filtered_Velocity'], label='Laser Pistol',color='blue')
+        plt.plot(ms.index, ms['Filtered_Velocity'], label='Livox_Measurement', color='red')
     plt.legend()
 
     plt.xlabel('Time')
