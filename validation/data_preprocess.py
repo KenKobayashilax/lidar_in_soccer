@@ -2,24 +2,25 @@ from scipy.interpolate import interp1d
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from scipy.signal import butter, lfilter
+from scipy.signal import butter, lfilter,freqz, filtfilt
 from sklearn.metrics import mean_squared_error
-
+from scipy.interpolate import CubicSpline
 
 # CubicSpline Interpolation
-def cs_interpolate(chunk, filter):
+def cs_interpolate(chunk, filter = False):
     if filter == False:
-        interpolator = interp1d(chunk['Time'], chunk['Velocity'], kind='cubic')
-        t_new = np.linspace(chunk['Time'].min(), chunk['Velocity'].max(), 1)
-        v_new = abs(interpolator(t_new))
-        gt_interp = pd.DataFrame({'Time': t_new, 'Velocity': v_new})
-    else:
-        interpolator = interp1d(chunk['Time'], chunk['Filtered_Velocity'], kind='cubic')
-        t_new = np.linspace(chunk['Time'].min(), chunk['Filtered_Velocity'].max(), 1)
-        v_new = abs(interpolator(t_new))
-        gt_interp = pd.DataFrame({'Time': t_new, 'Filtered_Velocity': v_new})
+        timestamps = chunk['Time']
+        values = chunk['Velocity']
+
+        cubic_spline1 = CubicSpline(timestamps, values)
+        cubic_spline2 = CubicSpline(timestamps, timestamps)
+
+        new_timestamps = np.arange(chunk['Time'].min(), chunk['Time'].max(), 0.01)
+
+        new_values1 = cubic_spline1(new_timestamps)
+        new_values2 = cubic_spline2(new_timestamps)
     
-    return gt_interp
+    return new_values1, new_values2
 
 
 # the lowpass filter
@@ -27,8 +28,9 @@ def butter_lowpass_filter(data, cutoff_freq, sample_rate, order=4):
     nyquist = 0.5 * sample_rate
     normal_cutoff = cutoff_freq / nyquist
     b, a = butter(order, normal_cutoff, btype='low', analog=False)
-    y = lfilter(b, a, data)
     
+    y = filtfilt(b, a, data)
+    #y = lfilter(b, a, data)
     return y
 
 
@@ -99,39 +101,38 @@ def plot_validation_result(len_diff, best_chunk, gt_new, ms):
     if len_diff > 0:
         aligned_gt = best_chunk
         time_offset = aligned_gt.index[0] - gt_new.index[0]
-        plt.plot(aligned_gt.index, aligned_gt['Velocity'], label='Ground Truth', color='blue')
-        plt.plot(ms.index + time_offset, ms['Velocity'], label='LiDAR_Measurement', color='red')
+        plt.plot(gt_new.index , gt_new['Velocity'], label='Laser Pistol', color='blue')
+        plt.plot(ms.index + time_offset, ms['Velocity'] , label='Livox_Measurement', color='red')
+        
     else:
         aligned_ms = best_chunk
         time_offset = aligned_ms.index[0] - ms.index[0]
-        plt.plot(gt_new.index + time_offset, gt_new['Velocity'], label='Ground Truth', color='blue')
-        plt.plot(aligned_ms.index, aligned_ms['Velocity'], label='LiDAR_Measurement', color='red')
-    
+        plt.plot(gt_new.index + time_offset, gt_new['Velocity'], label='Laser Pistol', color='blue')
+        plt.plot(ms.index , ms['Velocity'], label='Livox_Measurement', color='red')
+        
     plt.legend()
     plt.xlabel('Time')
     plt.ylabel('Velocity')
     plt.title('Validation')
     plt.tight_layout()
-    plt.show()
-
+    return plt
 
 
 def plot_validation_filtered_result(len_diff_f, best_chunk_f, gt_f_new, ms):
     if len_diff_f > 0:
         aligned_gt_f = best_chunk_f
-        time_offset_f = aligned_gt_f.iloc[0].values[0]*100 - gt_f_new.iloc[0].values[0]
-        plt.plot(aligned_gt_f['Time'] * 100, aligned_gt_f['Filtered_Velocity'], label='Ground Truth',color='blue')
-        plt.plot(ms['Time'] + time_offset_f, ms['Filtered_Velocity'], label='LiDAR_Measurement', color='red')
+        time_offset_f = aligned_gt_f.index[0] - gt_f_new.index[0]
+        plt.plot(gt_f_new.index, gt_f_new['Filtered_Velocity'], label='Laser Pistol',color='blue')
+        plt.plot(ms.index + time_offset_f, ms['Filtered_Velocity'], label='Livox_Measurement', color='red')
     else:
         aligned_ms_f = best_chunk_f
-        time_offset_f = aligned_ms_f.iloc[0].values[0]- ms.iloc[0].values[0]
-        plt.plot(gt_f_new['Time'] * 100 + time_offset_f, gt_f_new['Filtered_Velocity'], label='Ground Truth',color='blue')
-        plt.plot(aligned_ms_f['Time'] , aligned_ms_f['Filtered_Velocity'], label='LiDAR_Measurement', color='red')
+        time_offset_f = aligned_ms_f.index[0] - ms.index[0]
+        plt.plot(gt_f_new.index + time_offset_f, gt_f_new['Filtered_Velocity'], label='Laser Pistol',color='blue')
+        plt.plot(ms.index, ms['Filtered_Velocity'], label='Livox_Measurement', color='red')
     plt.legend()
 
     plt.xlabel('Time')
-    plt.ylabel('Filtered_Velocity')
-    plt.title('Validation_filtered')
-
+    plt.ylabel('Velocity')
+    plt.title('Filtered Validation')
     plt.tight_layout()
-    plt.show()
+    return plt
