@@ -80,7 +80,7 @@ def compute_nearest_cluster_multicase(pcd, labels, fl_label, center_prev_list):
             nearest_cluster_id = fl_label
             refer_id = center_prev[0]
     
-    return refer_id, nearest_cluster_id
+    return refer_id, nearest_cluster_id, nearest_dist
 
 # compute bbox of clusters
 def compute_bbox(pcd, labels):
