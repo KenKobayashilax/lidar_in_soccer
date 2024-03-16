@@ -148,3 +148,22 @@ def plot_validation_filtered_result(len_diff_f, best_chunk_f, gt_f_new, ms):
     plt.title('Filtered Validation')
     plt.tight_layout()
     return plt
+
+
+def plot_trajectory(coordinates_list, save_path):
+
+    plt.figure()
+
+    for coordinates in coordinates_list:
+        plt.plot(abs(coordinates[0]), abs(coordinates[1]), marker='o',markersize=2, color='blue')  
+
+
+    plt.xlabel('X Coordinate')
+    plt.ylabel('Y Coordinate')
+    plt.title('Trajectory Plot')
+    plt.grid(True)
+
+    plt.savefig(save_path)
+
+
+    plt.show()
