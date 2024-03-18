@@ -55,22 +55,36 @@ def crop_cluster(pcd, labels, cluster_id, visualize=False):
         return(cropped_pcd)
 
 def visualize_bbox_result(org_pcd, human_clusters,time_duration=0.2, cam_params=None, visualize=False):
+    
+    #used in coloring clusters
+    colors = [[1,0,0], [0,0,1], [0,1,0], [0.5, 0.5, 0], [0.5, 0, 0.5], [0, 0.5, 0.5]]
+    
     if human_clusters is not None: 
         org_pcd.paint_uniform_color([0,0,0])
         org_pcd_load = np.asarray(org_pcd.points)
         org_pcd_color = np.asarray(org_pcd.colors)
-
-        human_pcd = o3d.geometry.PointCloud()
-        human_pcd.points = o3d.utility.Vector3dVector(human_clusters)
-        human_pcd.paint_uniform_color([1,0,0])
-        human_pcd_color = np.asarray(human_pcd.colors)
-        human_pcd_load = np.asarray(human_pcd.points)
-
-        res_pcd = o3d.geometry.PointCloud()
-        res_pcd_load = np.concatenate((human_pcd_load, org_pcd_load), axis=0)
-        res_pcd_color = np.concatenate((human_pcd_color,org_pcd_color), axis=0) 
-        res_pcd.points = o3d.utility.Vector3dVector(res_pcd_load)   
-        res_pcd.colors = o3d.utility.Vector3dVector(res_pcd_color)       
+        
+        #initialization
+        res_pcd = org_pcd
+        
+        for i, key in enumerate(human_clusters.keys()):
+            human_pcd = o3d.geometry.PointCloud()
+            human_pcd.points = o3d.utility.Vector3dVector(human_clusters[key])
+            human_pcd.paint_uniform_color(colors[key])
+            human_pcd_color = np.asarray(human_pcd.colors)
+            human_pcd_load = np.asarray(human_pcd.points)
+            
+            if i==0:
+                res_pcd = o3d.geometry.PointCloud()
+                res_pcd_load = np.concatenate((human_pcd_load, org_pcd_load), axis=0)
+                res_pcd_color = np.concatenate((human_pcd_color,org_pcd_color), axis=0) 
+                res_pcd.points = o3d.utility.Vector3dVector(res_pcd_load)   
+                res_pcd.colors = o3d.utility.Vector3dVector(res_pcd_color)       
+            else:
+                res_pcd_load = np.concatenate((human_pcd_load, res_pcd_load), axis=0)
+                res_pcd_color = np.concatenate((human_pcd_color,res_pcd_color), axis=0) 
+                res_pcd.points = o3d.utility.Vector3dVector(res_pcd_load)   
+                res_pcd.colors = o3d.utility.Vector3dVector(res_pcd_color)
 
         if visualize:
             visualizer.visualize(res_pcd, 
@@ -79,3 +93,4 @@ def visualize_bbox_result(org_pcd, human_clusters,time_duration=0.2, cam_params=
                                 width=1920, 
                                 height=1080, 
                                 cam_params=cam_params)
+        return res_pcd

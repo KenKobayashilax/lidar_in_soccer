@@ -87,6 +87,7 @@ def visualize_pcds(file_list, save_folder=None, time_duration=0.1, width=1920, h
             save_path = save_folder + '/' + os.path.splitext(os.path.basename(pcd_file))[0] + '.png'
         
         geometry.points = o3d.io.read_point_cloud(pcd_file).points
+        geometry.colors = o3d.io.read_point_cloud(pcd_file).colors
         vis.update_geometry(geometry)
         vis.poll_events()
         vis.update_renderer()

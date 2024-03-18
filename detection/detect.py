@@ -72,13 +72,13 @@ def compute_nearest_cluster_multicase(pcd, labels, fl_label, center_prev_list):
     #center of cropped_clusters
     center_tmp = cropped_cluster.get_center()
 
-    for center_prev in center_prev_list:
+    for cluster_id, center_prev in center_prev_list.items():
         #euclidian distance between center_prev and center_tmp
-        current_dist = np.linalg.norm (center_prev[1] - center_tmp)
+        current_dist = np.linalg.norm (center_prev - center_tmp)
         if current_dist < nearest_dist:
             nearest_dist = current_dist
             nearest_cluster_id = fl_label
-            refer_id = center_prev[0]
+            refer_id = cluster_id
     
     return refer_id, nearest_cluster_id
 
@@ -168,3 +168,15 @@ def save_bbox_result(inx, folder_tracked, pcd_file, cropped_pcd):
     save_path_tracked = class_folder_tracked + '/' + os.path.basename(pcd_file) 
     if save_path_tracked != None:
         o3d.io.write_point_cloud(save_path_tracked, cropped_pcd)
+
+#save result of all classes
+def save_whole_result(folder_tracked, pcd_file, pcd):
+    cluster_tracked = "all_classes"
+    class_folder_tracked = os.path.join(folder_tracked, cluster_tracked)
+    
+    if not os.path.exists(class_folder_tracked):
+        os.makedirs(class_folder_tracked)
+        
+    save_path_tracked = class_folder_tracked + '/' + os.path.basename(pcd_file) 
+    if save_path_tracked != None:
+        o3d.io.write_point_cloud(save_path_tracked, pcd)
